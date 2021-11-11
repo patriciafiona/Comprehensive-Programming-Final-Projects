@@ -12,8 +12,14 @@ window_height = 600
 framepersecond = 60
 app_name = "Flappy Bird"
 flappy_x_pos = 100
-gap = 180
+gap = 170
 pipeVelX = -4 #pipe velocity along x
+
+# List containing lower pipes
+down_pipes = []
+  
+# List Containing upper pipes
+up_pipes = []
 
 vertical = int(window_width/2)
 
@@ -70,6 +76,10 @@ game_images['pipeimage'] = (
 # -------------------------------------------------------------------------------------
 # Event Listener Start
 def eventListener():
+    global vertical 
+    global down_pipes
+    global up_pipes
+
     for event in pygame.event.get():
         # if user clicks on cross button, close the game
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -81,7 +91,6 @@ def eventListener():
             btn_start_pos = textures['start_btn'].get_rect()
             btn_start_pos = btn_start_pos.move(100, 320) # Position of the button
             if btn_start_pos.collidepoint(x, y):
-                print(">>> Status: Go to Waiting Room")
                 pygame.mixer.music.stop()
                 Game['gameState'] = GameState.waiting
                 waiting_screen()
@@ -96,9 +105,21 @@ def eventListener():
 
 				    #Play sound hop
                     pygame.mixer.init()
-                    pygame.mixer.music.load("./resources/audio/flap.wav")
-                    pygame.mixer.music.play()
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("./resources/audio/flap.wav"), maxtime=1000)
+
 			    # restart
+        elif (Game['gameState'] == GameState.gameover and event.type == KEYDOWN and event.key == K_c):
+            Game['gameState'] = GameState.loby
+            
+            # set to begin value
+            Game['score'] = 0
+            down_pipes = []
+            up_pipes = []
+            vertical = int(window_width/2)
+
+            # show loading screen
+            loading_screen()
+
         else:
             # Just Refresh the screen
             pygame.display.update()        
@@ -111,6 +132,7 @@ def eventListener():
 # -------------------------------------------------------------------------------------
 # Loading Screen Method Start
 def loading_screen():
+    pygame.mixer.init()
     pygame.mixer.music.load("./resources/audio/themesong.wav")
     pygame.mixer.music.play(loops = -1)
 
@@ -139,8 +161,8 @@ def waiting_screen():
     textures['background'] = pygame.transform.scale(textures['background'], (window_width + window_width * .2, window_height + window_height * .2))
     window.blit(textures['background'], (0, 0))
 
-    textures['getReady'] = pygame.transform.scale(textures['getReady'], (200, 230))
-    window.blit(textures['getReady'], (50, 170))
+    textures['getReady'] = pygame.transform.scale(textures['getReady'], (210, 230))
+    window.blit(textures['getReady'], (40, 170))
 
     if isFirstTime == True:
         t = Timer(2, updateToWaiting, args=("True",))  
@@ -193,6 +215,8 @@ def updateGameComponent():
     global pipeVelX
     global vertical
     global elevation
+    global down_pipes
+    global up_pipes
 
     if isFirstTime == False:
         window.fill(black)
@@ -202,10 +226,10 @@ def updateGameComponent():
         Flappy['sprite'] = textures['flappy'][1]
 
         pygame.font.init() # you have to call this at the start, 
-        scoreFont = pygame.font.SysFont("./resources/fonts/flappy.ttf", 75)
+        scoreFont = pygame.font.Font("./resources/fonts/flappy.ttf", 75)
         score_txt = scoreFont.render(str(Game['score']), False, white)
 
-        bestScoreFont = pygame.font.SysFont("./resources/fonts/flappy.ttf", 20)
+        bestScoreFont = pygame.font.Font("./resources/fonts/flappy.ttf", 20)
         best_score_txt = bestScoreFont.render("Best Score: " + str(Game['highscore']), False, white)
 
         # Update flappy
@@ -231,6 +255,15 @@ def updateGameComponent():
             if Flappy['v'] < 10 and not Flappy['isFlap']:
                 Flappy['v'] += 0.5
 
+        # collision detection
+        if (Game['gameState'] == GameState.started):
+            if isGameOver(flappy_x_pos,vertical, up_pipes, down_pipes):
+                Game['gameState'] = GameState.gameover
+
+                #Play sound dishk
+                pygame.mixer.init()
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("./resources/audio/crash.wav"), maxtime=1000)
+
         # if hits ceiling, stop ascending
         # if out of screen, game over
         if (Game['gameState'] == GameState.started):
@@ -239,12 +272,10 @@ def updateGameComponent():
             elif (fy > window_height):
                 Flappy['v'] = 0
                 Game['gameState'] = GameState.gameover
-                print('>>> Status: Game Over - Reach Bottom')
 
                 #Play sound dishk
                 pygame.mixer.init()
-                pygame.mixer.music.load("./resources/audio/crash.wav")
-                pygame.mixer.music.play()
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("./resources/audio/crash.wav"), maxtime=1000)
 
         if Flappy['isFlap']: 
             Flappy['isFlap'] = False
@@ -262,10 +293,9 @@ def updateGameComponent():
                     if (Game['score'] > Game['highscore']):
                         Game['highscore'] = Game['score']
 
-                    #Play sound dishk
+                    #Play sound score
                     pygame.mixer.init()
-                    pygame.mixer.music.load("./resources/audio/score.wav")
-                    pygame.mixer.music.play()
+                    pygame.mixer.Channel(0).play(pygame.mixer.Sound("./resources/audio/score.wav"), maxtime=1000)
                 
             # move pipes to the left
             for upperPipe, lowerPipe in zip(up_pipes, down_pipes):
@@ -274,7 +304,7 @@ def updateGameComponent():
   
             # Add a new pipe when the first is
             # about to cross the leftmost part of the screen
-            if (Game['frames'] % 70 == 0):
+            if (Game['frames'] % 60 == 0):
                 r = random.randint(0, window_height/2) % (window_height/2) + 75
 
                 newpipe = createPipe(r, gap)
@@ -287,16 +317,6 @@ def updateGameComponent():
                     up_pipes.pop(0)
                     down_pipes.pop(0)
 
-        # collision detection
-        if (Game['gameState'] == GameState.started):
-            if isGameOver(flappy_x_pos,vertical, up_pipes, down_pipes):
-                Game['gameState'] = GameState.gameover
-                print('>>> Status: Game Over - Collidies')
-
-                #Play sound dishk
-                pygame.mixer.init()
-                pygame.mixer.music.load("./resources/audio/crash.wav")
-                pygame.mixer.music.play()
 
         #display all component
         window.blit(textures['background'], (0, 0))
@@ -316,16 +336,23 @@ def updateGameComponent():
                             (lowerPipe['x'], lowerPipe['y']))
 
         window.blit(score_txt,(10,10))
-        window.blit(best_score_txt,(10,65))
+        window.blit(best_score_txt,(10,80))
 
         bird = pygame.transform.scale(Flappy['sprite'], (Flappy['sprite'].get_width() + 
                                                          Flappy['sprite'].get_width() * 0.2, 
                                                                                    Flappy['sprite'].get_height() + 
                                                                                    Flappy['sprite'].get_height() * 0.2))
+        if Game['gameState'] == GameState.waiting:
+            vertical = window_height / 2
+
         window.blit(bird,(flappy_x_pos, vertical))   
 
+        if Game['gameState'] == GameState.gameover:
+            # Show Game Over
+            updateGameOverScreen()
+
         # dont forget to update total frames
-        Game['frames'] = Game['frames'] + 1;
+        Game['frames'] += 1;
 
         # Just Refresh the screen
         pygame.display.update()        
@@ -336,11 +363,23 @@ def updateGameComponent():
 # updateGameComponent method End
 # -------------------------------------------------------------------------------------
 
+def updateGameOverScreen():
+    window.fill(black)
+    textures['background'] = pygame.transform.scale(textures['background'], (window_width, window_height))
+    textures['gameover'] = pygame.transform.scale(textures['gameover'], (150, 30))
+
+    font = pygame.font.Font("./resources/fonts/flappy.ttf", 20)
+    pressC_text = font.render("Press C to continue", False, white)
+
+    window.blit(textures['background'], (0, 0))
+    window.blit(textures['gameover'], (80, 285))
+    if (Game['frames'] % 60 < 30):
+        window.blit(pressC_text,(50, 325))
+
 # -------------------------------------------------------------------------------------
 # Main Program Start
 if __name__ == "__main__":
     pygame.init()  
-    pygame.mixer.init()
 
     # Sets the title on top of game window
     pygame.display.set_caption('Flappy Bird')      
@@ -348,20 +387,15 @@ if __name__ == "__main__":
     framepersecond_clock = pygame.time.Clock()
 
     loading_screen()
-  
-    # List containing lower pipes
-    down_pipes = []
-  
-    # List Containing upper pipes
-    up_pipes = []
 
     while True:
         pygame.init()
 
+        # Event listener
+        eventListener()
+
         if Game['gameState'] != GameState.loby:
             updateGameComponent()
 
-        # Event listener
-        eventListener()
 # Main Program End
 # -------------------------------------------------------------------------------------
