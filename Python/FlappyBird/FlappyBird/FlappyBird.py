@@ -380,7 +380,10 @@ if __name__ == "__main__":
     pygame.init()  
 
     # Sets the title on top of game window
-    pygame.display.set_caption('Flappy Bird')      
+    pygame.display.set_caption('Flappy Bird')    
+    
+    # Set program icon
+    pygame.display.set_icon(textures['flappy'][0])
 
     framepersecond_clock = pygame.time.Clock()
 
