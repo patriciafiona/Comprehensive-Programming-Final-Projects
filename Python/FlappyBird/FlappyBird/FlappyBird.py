@@ -12,7 +12,7 @@ window_height = 600
 framepersecond = 60
 app_name = "Flappy Bird"
 flappy_x_pos = 100
-gap = 170
+gap = 180
 pipeVelX = -4 #pipe velocity along x
 
 # List containing lower pipes
@@ -161,8 +161,8 @@ def waiting_screen():
     textures['background'] = pygame.transform.scale(textures['background'], (window_width + window_width * .2, window_height + window_height * .2))
     window.blit(textures['background'], (0, 0))
 
-    textures['getReady'] = pygame.transform.scale(textures['getReady'], (210, 230))
-    window.blit(textures['getReady'], (40, 170))
+    textures['getReady'] = pygame.transform.scale(textures['getReady'], (250, 250))
+    window.blit(textures['getReady'], (20, 150))
 
     if isFirstTime == True:
         t = Timer(2, updateToWaiting, args=("True",))  
@@ -195,9 +195,8 @@ def isGameOver(horizontal, vertical, up_pipes, down_pipes):
         return True
   
     for pipe in up_pipes:
-        pipeHeight = game_images['pipeimage'][0].get_height()
-        if(vertical < pipeHeight + pipe['y'] and\
-           abs(horizontal - pipe['x']) < game_images['pipeimage'][0].get_width()):
+        pipeHeight = game_images['pipeimage'][0].get_height() + game_images['pipeimage'][0].get_height() * 0.2
+        if(vertical < pipeHeight + pipe['y'] and abs(horizontal - pipe['x']) < game_images['pipeimage'][0].get_width()):
             return True
   
     for pipe in down_pipes:
@@ -255,8 +254,7 @@ def updateGameComponent():
             if Flappy['v'] < 10 and not Flappy['isFlap']:
                 Flappy['v'] += 0.5
 
-        # collision detection
-        if (Game['gameState'] == GameState.started):
+            # collision detection
             if isGameOver(flappy_x_pos,vertical, up_pipes, down_pipes):
                 Game['gameState'] = GameState.gameover
 
@@ -264,9 +262,8 @@ def updateGameComponent():
                 pygame.mixer.init()
                 pygame.mixer.Channel(0).play(pygame.mixer.Sound("./resources/audio/crash.wav"), maxtime=1000)
 
-        # if hits ceiling, stop ascending
-        # if out of screen, game over
-        if (Game['gameState'] == GameState.started):
+            # if hits ceiling, stop ascending
+            # if out of screen, game over
             if (fy < 0):
                 Flappy['v'] = 0
             elif (fy > window_height):
@@ -281,10 +278,13 @@ def updateGameComponent():
             Flappy['isFlap'] = False
 
         if Game['gameState'] == GameState.started: 
+            # update vertical value - bird y position
             vertical = vertical + min(Flappy['v'], elevation - vertical - fy)
+        elif Game['gameState'] == GameState.waiting:
+            vertical = window_height / 2
 
-        if (Game['gameState'] == GameState.started):
-            # check for your_score
+        # check for your_score
+        if Game['gameState'] == GameState.started: 
             for pipe in up_pipes:
                 pipeMidPos = pipe['x'] + game_images['pipeimage'][0].get_width()/2
                 if pipeMidPos <= fx < pipeMidPos + 4:
@@ -342,8 +342,6 @@ def updateGameComponent():
                                                          Flappy['sprite'].get_width() * 0.2, 
                                                                                    Flappy['sprite'].get_height() + 
                                                                                    Flappy['sprite'].get_height() * 0.2))
-        if Game['gameState'] == GameState.waiting:
-            vertical = window_height / 2
 
         window.blit(bird,(flappy_x_pos, vertical))   
 

@@ -282,11 +282,9 @@ void updateGameComponent() {
 	if (game.gameState == started) {
 		flappy.sprite.move(0, flappy.v);
 		flappy.v += 0.5;
-	}
 
-	// if hits ceiling, stop ascending
-	// if out of screen, game over
-	if (game.gameState == started) {
+		// if hits ceiling, stop ascending
+		// if out of screen, game over
 		if (fy < 0) {
 			flappy.sprite.setPosition(100, 0);
 			flappy.v = 0;
