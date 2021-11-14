@@ -46,7 +46,7 @@ Here I using Visual Studio 2019 for running the C++ project with SFML. The steps
 
 <p align="center"><i><b>Figure 3</b> Open Properties by Right Click in the Project Name</i></p>
 
-5. In the project's properties, add:
+4. In the project's properties, add:
    - The path to the SFML headers (<sfml-install-path>/include) to C/C++ » General » Additional Include Directories
    - The path to the SFML libraries (<sfml-install-path>/lib) to Linker » General » Additional Library Directories
 
@@ -63,7 +63,7 @@ Here I using Visual Studio 2019 for running the C++ project with SFML. The steps
 
    <p align="center"><i><b>Figure 5</b> Set the SFML lib Location</i></p>
 
- 6. The next step is to link your application to the SFML libraries (.lib files) that your code will need. SFML is made of 5 modules (system, window, graphics, network and audio), and there's one library for each of them.
+ 5. The next step is to link your application to the SFML libraries (.lib files) that your code will need. SFML is made of 5 modules (system, window, graphics, network and audio), and there's one library for each of them.
  
    Libraries must be added in the project's properties, in Linker » Input » Additional Dependencies. Add all the SFML libraries that you need, for example "sfml-graphics.lib", "sfml-window.lib" and "sfml-system.lib".
    
@@ -81,13 +81,13 @@ Here I using Visual Studio 2019 for running the C++ project with SFML. The steps
 
    <p align="center"><i><b>Figure 6</b> Set the SFML lib that We want to Use</i></p>
  
- 7. Because here I use dynamic version of SFML, we can save the setting by click **Apply** and **Ok**.
+ 6. Because here I use dynamic version of SFML, we can save the setting by click **Apply** and **Ok**.
  
  ```diff
  -More Details about the setting can be seen in SFML Official Website (https://www.sfml-dev.org/tutorials/2.5/start-vc.php)-
  ``` 
  
-  8. Now you can run the game
+  7. Now you can run the game
 
 ### B. Python Environment
 Here I use **conda environment** that use Anaconda App to create python game environment. If you don't have Anaconda App, you can still prepare the environment by using the steps that you can search by yourself and make sure that you already have **Python** in your computer. The process of preparing the enviroment can be seen in the bottom instructions:
