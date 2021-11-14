@@ -20,6 +20,10 @@ Result of Flappy Bird Porting Game Project, requirement for pass Comprehensive P
 ```diff
 Projects Name         : Flappy Bird
 
+Creator               : Patricia Fiona - 王佳佳
+
+Student ID            : L20253009
+
 Type                  : Final Project (Nanjing Xiaozhuang University)
 
 Platform              : PC
