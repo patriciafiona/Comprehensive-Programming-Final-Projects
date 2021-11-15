@@ -128,7 +128,7 @@ Here I use **conda environment** that use Anaconda App to create python game env
 
    <p align="center"><i><b>Figure 9</b> Install PyGame Library in Environment</i></p>
 
- 5. You can check your list of libraries by runing this code:
+ 5. You can check your list of libraries by running this code:
  
   ```diff
  pip list
