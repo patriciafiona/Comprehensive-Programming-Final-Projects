@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>FlappyBird</Name>
     <RootNamespace>FlappyBird</RootNamespace>
-    <InterpreterId>CondaEnv|CondaEnv|anaconda3</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|flappybird</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,8 +25,7 @@
     <Compile Include="FlappyBird.py" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|anaconda3" />
-    <InterpreterReference Include="CondaEnv|CondaEnv|Anaconda3" />
+    <InterpreterReference Include="CondaEnv|CondaEnv|flappybird" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
