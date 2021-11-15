@@ -148,7 +148,7 @@ Here I use **conda environment** that use Anaconda App to create python game env
    <img src="https://user-images.githubusercontent.com/32255348/141667512-89a89a02-d970-4b61-ac74-38e241764033.png" width="800" />
  </p>
 
- <p align="center"><i><b>Figure 11</b> Add Python Environmet in Visual Studio 2019</i></p>
+ <p align="center"><i><b>Figure 11</b> Add Python Environment in Visual Studio 2019</i></p>
 
  8. Select '**Existing Environment**' ->>> From the Environment section, select '**Your Envirnoment**' ->>> And Click Add
  
