@@ -91,7 +91,7 @@ Here I using Visual Studio 2019 for running the C++ project with SFML. The steps
 
 ### B. Python Environment
 Here I use **conda environment** that use Anaconda App to create python game environment. If you don't have Anaconda App, you can still prepare the environment by using the steps that you can search by yourself and make sure that you already have **Python** in your computer. The process of preparing the enviroment can be seen in the bottom instructions:
- 1. Open Anaconda Promp
+ 1. Open Anaconda Prompt
  2. To create an environment:
  ```diff
  conda create --name {NAME_OF_YOUR_ENVIRONMENT} python=3.8
@@ -128,7 +128,7 @@ Here I use **conda environment** that use Anaconda App to create python game env
 
    <p align="center"><i><b>Figure 9</b> Install PyGame Library in Environment</i></p>
 
- 5. You can check your list of libraries by runing this code:
+ 5. You can check your list of libraries by running this code:
  
   ```diff
  pip list
@@ -148,7 +148,7 @@ Here I use **conda environment** that use Anaconda App to create python game env
    <img src="https://user-images.githubusercontent.com/32255348/141667512-89a89a02-d970-4b61-ac74-38e241764033.png" width="800" />
  </p>
 
- <p align="center"><i><b>Figure 11</b> Add Python Environmet in Visual Studio 2019</i></p>
+ <p align="center"><i><b>Figure 11</b> Add Python Environment in Visual Studio 2019</i></p>
 
  8. Select '**Existing Environment**' ->>> From the Environment section, select '**Your Envirnoment**' ->>> And Click Add
  
