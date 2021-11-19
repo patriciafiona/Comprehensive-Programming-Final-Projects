@@ -11,7 +11,10 @@
     <OutputPath>.</OutputPath>
     <Name>FlappyBird</Name>
     <RootNamespace>FlappyBird</RootNamespace>
-    <InterpreterId>CondaEnv|CondaEnv|flappybird</InterpreterId>
+    <InterpreterId>MSBuild|fbird_env|$(MSBuildProjectFullPath)</InterpreterId>
+    <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <EnableNativeCodeDebugging>True</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,7 +28,24 @@
     <Compile Include="FlappyBird.py" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|flappybird" />
+    <Interpreter Include="C:\Users\USER\flappy_env\">
+      <Id>flappy_env</Id>
+      <Version>3.6</Version>
+      <Description>flappy_env (Python 3.6 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+    <Interpreter Include="fbird_env\">
+      <Id>fbird_env</Id>
+      <Version>3.9</Version>
+      <Description>fbird_env (Python 3.9 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

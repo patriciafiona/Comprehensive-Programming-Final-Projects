@@ -60,7 +60,7 @@ Game = {
     }
 
 Flappy = {
-    'v': window_height / 2,
+    'v': window_height / 2, # Velocity
     'isFlap': False,
 	'frame': 0,
 	'sprite': textures['flappy'][0],
@@ -217,146 +217,144 @@ def updateGameComponent():
     global down_pipes
     global up_pipes
 
-    if isFirstTime == False:
-        window.fill(black)
+    
+    window.fill(black)
 
-        textures['background'] = pygame.transform.scale(textures['background'], (window_width, window_height))
+    textures['background'] = pygame.transform.scale(textures['background'], (window_width, window_height))
 
-        Flappy['sprite'] = textures['flappy'][1]
+    Flappy['sprite'] = textures['flappy'][1]
 
-        pygame.font.init() # you have to call this at the start, 
-        scoreFont = pygame.font.Font("./resources/fonts/flappy.ttf", 75)
-        score_txt = scoreFont.render(str(Game['score']), False, white)
+    pygame.font.init() # you have to call this at the start, 
+    scoreFont = pygame.font.Font("./resources/fonts/flappy.ttf", 75)
+    score_txt = scoreFont.render(str(Game['score']), False, white)
 
-        bestScoreFont = pygame.font.Font("./resources/fonts/flappy.ttf", 20)
-        best_score_txt = bestScoreFont.render("Best Score: " + str(Game['highscore']), False, white)
+    bestScoreFont = pygame.font.Font("./resources/fonts/flappy.ttf", 20)
+    best_score_txt = bestScoreFont.render("Best Score: " + str(Game['highscore']), False, white)
 
-        # Update flappy
-        flappy_sprite = Flappy['sprite'].get_rect().move(flappy_x_pos, vertical)
-        fx = flappy_sprite.x
-        fy = flappy_sprite.y
-        fw = 34 * Flappy['sprite'].get_width() + Flappy['sprite'].get_width() * 0.2
-        fh = 24 * Flappy['sprite'].get_height() + Flappy['sprite'].get_height() * 0.2
+    # Update flappy
+    flappy_sprite = Flappy['sprite'].get_rect().move(flappy_x_pos, vertical)
+    fx = flappy_sprite.x
+    fy = flappy_sprite.y
 
-        # Flap the wings if playing
-        if Game['gameState'] == GameState.waiting or Game['gameState'] == GameState.started:
-		    # change the texture once in 6 frames
-            if(Game['frames'] % 6 == 0):
-                Flappy['frame'] =  Flappy['frame'] + 1
+    # Flap the wings if playing
+    if Game['gameState'] == GameState.waiting or Game['gameState'] == GameState.started:
+		# change the texture once in 6 frames
+        if(Game['frames'] % 6 == 0):
+            Flappy['frame'] =  Flappy['frame'] + 1
 
-            if (Flappy['frame'] == 3):
-                Flappy['frame'] = 0
+        if (Flappy['frame'] == 3):
+            Flappy['frame'] = 0
 
-        Flappy['sprite'] = textures['flappy'][Flappy['frame']]
+    Flappy['sprite'] = textures['flappy'][Flappy['frame']]
 
-        # Move flappy
-        if Game['gameState'] == GameState.started: 
-            if Flappy['v'] < 10 and not Flappy['isFlap']:
-                Flappy['v'] += 0.5
+    # Move flappy
+    if Game['gameState'] == GameState.started: 
+        if Flappy['v'] < 10 and not Flappy['isFlap']:
+            Flappy['v'] += 0.5
 
-            # collision detection
-            if isGameOver(flappy_x_pos,vertical, up_pipes, down_pipes):
-                Game['gameState'] = GameState.gameover
+        # collision detection
+        if isGameOver(flappy_x_pos,vertical, up_pipes, down_pipes):
+            Game['gameState'] = GameState.gameover
 
-                #Play sound dishk
+            #Play sound dishk
+            pygame.mixer.init()
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound("./resources/audio/crash.wav"), maxtime=1000)
+
+        # if hits ceiling, stop ascending
+        # if out of screen, game over
+        if (fy < 0):
+            Flappy['v'] = 0
+        elif (fy > window_height):
+            Flappy['v'] = 0
+            Game['gameState'] = GameState.gameover
+
+            #Play sound dishk
+            pygame.mixer.init()
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound("./resources/audio/crash.wav"), maxtime=1000)
+
+    if Flappy['isFlap']: 
+        Flappy['isFlap'] = False
+
+    if Game['gameState'] == GameState.started: 
+        # update vertical value - bird y position
+        vertical = vertical + min(Flappy['v'], elevation - vertical - fy)
+    elif Game['gameState'] == GameState.waiting:
+        vertical = window_height / 2
+
+    # check for your_score
+    if Game['gameState'] == GameState.started: 
+        for pipe in up_pipes:
+            pipeMidPos = pipe['x'] + game_images['pipeimage'][0].get_width()/2
+            if pipeMidPos <= fx < pipeMidPos + 4:
+                Game['score'] = Game['score'] + 1
+
+                if (Game['score'] > Game['highscore']):
+                    Game['highscore'] = Game['score']
+
+                #Play sound score
                 pygame.mixer.init()
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound("./resources/audio/crash.wav"), maxtime=1000)
-
-            # if hits ceiling, stop ascending
-            # if out of screen, game over
-            if (fy < 0):
-                Flappy['v'] = 0
-            elif (fy > window_height):
-                Flappy['v'] = 0
-                Game['gameState'] = GameState.gameover
-
-                #Play sound dishk
-                pygame.mixer.init()
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound("./resources/audio/crash.wav"), maxtime=1000)
-
-        if Flappy['isFlap']: 
-            Flappy['isFlap'] = False
-
-        if Game['gameState'] == GameState.started: 
-            # update vertical value - bird y position
-            vertical = vertical + min(Flappy['v'], elevation - vertical - fy)
-        elif Game['gameState'] == GameState.waiting:
-            vertical = window_height / 2
-
-        # check for your_score
-        if Game['gameState'] == GameState.started: 
-            for pipe in up_pipes:
-                pipeMidPos = pipe['x'] + game_images['pipeimage'][0].get_width()/2
-                if pipeMidPos <= fx < pipeMidPos + 4:
-                    Game['score'] = Game['score'] + 1
-
-                    if (Game['score'] > Game['highscore']):
-                        Game['highscore'] = Game['score']
-
-                    #Play sound score
-                    pygame.mixer.init()
-                    pygame.mixer.Channel(0).play(pygame.mixer.Sound("./resources/audio/score.wav"), maxtime=1000)
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("./resources/audio/score.wav"), maxtime=1000)
                 
-            # move pipes to the left
-            for upperPipe, lowerPipe in zip(up_pipes, down_pipes):
-                upperPipe['x'] = upperPipe['x'] + pipeVelX
-                lowerPipe['x'] = lowerPipe['x'] + pipeVelX
+        # move pipes to the left
+        for upperPipe, lowerPipe in zip(up_pipes, down_pipes):
+            upperPipe['x'] = upperPipe['x'] + pipeVelX
+            lowerPipe['x'] = lowerPipe['x'] + pipeVelX
   
-            # Add a new pipe when the first is
-            # about to cross the leftmost part of the screen
-            if (Game['frames'] % 60 == 0):
-                r = random.randint(0, window_height/2) % (window_height/2) + 75
+        # Add a new pipe when the first is
+        # about to cross the leftmost part of the screen
+        if (Game['frames'] % 60 == 0):
+            r = random.randint(0, window_height/2) % (window_height/2) + 75
 
-                newpipe = createPipe(r, gap)
-                up_pipes.append(newpipe[0])
-                down_pipes.append(newpipe[1])
+            newpipe = createPipe(r, gap)
+            up_pipes.append(newpipe[0])
+            down_pipes.append(newpipe[1])
   
-            # if the pipe is out of the screen, remove it
-            if len(up_pipes) > 0 and len(down_pipes) > 0:
-                if up_pipes[0]['x'] < -game_images['pipeimage'][0].get_width():
-                    up_pipes.pop(0)
-                    down_pipes.pop(0)
+        # if the pipe is out of the screen, remove it
+        if len(up_pipes) > 0 and len(down_pipes) > 0:
+            if up_pipes[0]['x'] < -game_images['pipeimage'][0].get_width():
+                up_pipes.pop(0)
+                down_pipes.pop(0)
 
 
-        #display all component
-        window.blit(textures['background'], (0, 0))
+    #display all component
+    window.blit(textures['background'], (0, 0))
         
-        if (Game['gameState'] == GameState.started):
-            for upperPipe, lowerPipe in zip(up_pipes, down_pipes):
-                pipeScale01 = pygame.transform.scale(game_images['pipeimage'][0], (game_images['pipeimage'][0].get_width(), 
-                                                                                   game_images['pipeimage'][0].get_height() + 
-                                                                                   game_images['pipeimage'][0].get_height() * 0.2))
-                window.blit(pipeScale01,
-                            (upperPipe['x'] ,upperPipe['y']))
+    if (Game['gameState'] == GameState.started):
+        for upperPipe, lowerPipe in zip(up_pipes, down_pipes):
+            pipeScale01 = pygame.transform.scale(game_images['pipeimage'][0], (game_images['pipeimage'][0].get_width(), 
+                                                                                game_images['pipeimage'][0].get_height() + 
+                                                                                game_images['pipeimage'][0].get_height() * 0.2))
+            window.blit(pipeScale01,
+                        (upperPipe['x'] ,upperPipe['y']))
 
-                pipeScale02 = pygame.transform.scale(game_images['pipeimage'][1], (game_images['pipeimage'][1].get_width(), 
-                                                                                   game_images['pipeimage'][1].get_height() + 
-                                                                                   game_images['pipeimage'][1].get_height() * 0.2))
-                window.blit(pipeScale02,
-                            (lowerPipe['x'], lowerPipe['y']))
+            pipeScale02 = pygame.transform.scale(game_images['pipeimage'][1], (game_images['pipeimage'][1].get_width(), 
+                                                                                game_images['pipeimage'][1].get_height() + 
+                                                                                game_images['pipeimage'][1].get_height() * 0.2))
+            window.blit(pipeScale02,
+                        (lowerPipe['x'], lowerPipe['y']))
 
-        window.blit(score_txt,(10,10))
-        window.blit(best_score_txt,(10,80))
+    window.blit(score_txt,(10,10))
+    window.blit(best_score_txt,(10,80))
 
-        bird = pygame.transform.scale(Flappy['sprite'], (Flappy['sprite'].get_width() + 
-                                                         Flappy['sprite'].get_width() * 0.2, 
-                                                                                   Flappy['sprite'].get_height() + 
-                                                                                   Flappy['sprite'].get_height() * 0.2))
+    bird = pygame.transform.scale(Flappy['sprite'], (Flappy['sprite'].get_width() + 
+                                                        Flappy['sprite'].get_width() * 0.2, 
+                                                                                Flappy['sprite'].get_height() + 
+                                                                                Flappy['sprite'].get_height() * 0.2))
 
-        window.blit(bird,(flappy_x_pos, vertical))   
+    window.blit(bird,(flappy_x_pos, vertical))   
 
-        if Game['gameState'] == GameState.gameover:
-            # Show Game Over
-            updateGameOverScreen()
+    if Game['gameState'] == GameState.gameover:
+        # Show Game Over
+        updateGameOverScreen()
 
-        # dont forget to update total frames
-        Game['frames'] += 1;
+    # dont forget to update total frames
+    Game['frames'] += 1;
 
-        # Just Refresh the screen
-        pygame.display.update()        
+    # Just Refresh the screen
+    pygame.display.update()        
                       
-        # set the rate of frame per second
-        framepersecond_clock.tick(framepersecond)
+    # set the rate of frame per second
+    framepersecond_clock.tick(framepersecond)
 
 # updateGameComponent method End
 # -------------------------------------------------------------------------------------
@@ -396,7 +394,8 @@ if __name__ == "__main__":
         eventListener()
 
         if Game['gameState'] != GameState.loby:
-            updateGameComponent()
+            if isFirstTime == False:
+                updateGameComponent()
 
 # Main Program End
 # -------------------------------------------------------------------------------------
